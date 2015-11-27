@@ -1,0 +1,1063 @@
+grf {
+	grfid: "FS\01\01";
+	name: string(STR_GRF_NAME);
+	desc: string(STR_GRF_DESCRIPTION);
+	version: 4;
+	min_compatible_version: 3;
+}
+
+railtypetable {
+    MONO, 
+    MGLV,
+}
+
+cargotable {
+    PASS,
+    TOUR,
+    GOOD,
+}
+
+/*
+ *   =========================
+ *   =====   templates   =====
+ *   =========================
+ */
+ 
+template tmpl_basic(x, y) {
+  //[left_x,     upper_y,    width,     height,      offset_x,    offset_y]
+    [x,            y,          10,        28,           -4,         -11]
+    [x + 20,       y,          26,        28,          -16,         -16]
+    [x + 50,       y,          36,        28,          -18,         -21]
+    [x + 90,       y,          26,        28,           -8,         -16]
+}
+
+template tmpl_4views(row) {
+    tmpl_basic(0, 20 + 40 * row)
+}
+
+template tmpl_8views(row) {
+    tmpl_basic(  0, 20 + 40 * row)
+    tmpl_basic(120, 20 + 40 * row)
+}
+
+template tmpl_purchase(row) {
+    [0, 20 + 40 * row, 53, 14, -25, -7]
+}
+
+                /************************************
+                 ************************************
+                 *****                          *****
+                 *****    FERTRANS MONORAILS    *****
+                 *****                          *****
+                 ************************************
+                 ************************************/
+
+/*               =====================
+ *               =====   CANDY   =====
+ *               =====================
+ */
+ 
+spriteset (set_candy_front,               "gfx/fertrans-mono-1.png") { tmpl_8views(0) }
+spriteset (set_candy_rear,                "gfx/fertrans-mono-1.png") { tmpl_8views(1) }
+spriteset (set_candy_purchase,            "gfx/fertrans-mono-1.png") { tmpl_purchase(2) }
+
+switch(FEAT_TRAINS, SELF, sw_candy_graphics, position_in_consist % 2) {
+    0:      set_candy_front;
+    set_candy_rear;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_candy_articulated_part, extra_callback_info1) {
+    1: return item_candy;
+    return 0xFF;
+}
+
+item(FEAT_TRAINS, item_candy) {
+    property {
+        name:                         string(STR_CANDY_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(1950, 1, 1);
+        model_life:                   18;
+        vehicle_life:                 10;
+        reliability_decay:            20;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS);
+        non_refittable_cargo_classes: bitmask();
+        loading_speed:                20; 
+        cost_factor:                  5;
+        running_cost_factor:          30;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        60 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   0.5; 
+        track_type:                   MONO;
+        power:                        90 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               60;
+        weight:                       12 ton;
+        engine_class:                 ENGINE_CLASS_MONORAIL;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.3;
+        air_drag_coefficient:         0.03;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       5;
+    }
+    
+    graphics {
+        default:                      sw_candy_graphics;
+        purchase:                     set_candy_purchase;
+        articulated_part:             sw_candy_articulated_part;
+    }
+}
+
+/*               =======================
+ *               =====   MASTIFF   =====
+ *               =======================
+ */
+ 
+spriteset (set_mastiff_front,               "gfx/fertrans-mono-1.png") { tmpl_8views(3) }
+spriteset (set_mastiff_rear,                "gfx/fertrans-mono-1.png") { tmpl_8views(4) }
+spriteset (set_mastiff_wagon,               "gfx/fertrans-mono-1.png") { tmpl_8views(12) }
+spriteset (set_mastiff_purchase,            "gfx/fertrans-mono-1.png") { tmpl_purchase(5) }
+
+switch(FEAT_TRAINS, SELF, sw_mastiff_graphics_rear, position_in_vehid_chain_from_end % 5) {
+    0:      set_mastiff_rear;
+    set_mastiff_wagon;
+}
+
+switch(FEAT_TRAINS, SELF, sw_mastiff_graphics, position_in_vehid_chain % 5) {
+    0:      set_mastiff_front;
+    sw_mastiff_graphics_rear;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_mastiff_articulated_part, extra_callback_info1) {
+    1 .. 4: return item_mastiff;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch(FEAT_TRAINS, SELF, sw_mastiff_length, position_in_vehid_chain % 5) {
+    0:      return 5;
+    4:      return 5;
+    return 6;
+}
+
+item(FEAT_TRAINS, item_mastiff) {
+    property {
+        name:                         string(STR_MASTIFF_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(1953, 1, 1);
+        model_life:                   32;
+        vehicle_life:                 15;
+        reliability_decay:            20;
+        refittable_cargo_classes:     ALL_NORMAL_CARGO_CLASSES;
+        non_refittable_cargo_classes: bitmask(CC_PASSENGERS);
+        default_cargo_type:           GOOD;
+        loading_speed:                10; 
+        cost_factor:                  7;
+        running_cost_factor:          120;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        65 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   0.8; 
+        track_type:                   MONO;
+        power:                        250 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               (20*3)/5;
+        weight:                       6 ton;
+        engine_class:                 ENGINE_CLASS_MONORAIL;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.3;
+        air_drag_coefficient:         0.04;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       5;
+    }
+    
+    graphics {
+        default:                      sw_mastiff_graphics;
+        purchase:                     set_mastiff_purchase;
+        articulated_part:             sw_mastiff_articulated_part;
+        length:                       sw_mastiff_length;
+    }
+}
+
+/*               =====================
+ *               =====   BBWAY   =====
+ *               =====================
+ */
+ 
+spriteset (set_bbway_front,               "gfx/fertrans-mono-1.png") { tmpl_8views(6) }
+spriteset (set_bbway_rear,                "gfx/fertrans-mono-1.png") { tmpl_8views(7) }
+spriteset (set_bbway_wagon_pax,           "gfx/fertrans-mono-1.png") { tmpl_8views(8) }
+spriteset (set_bbway_wagon_cargo,         "gfx/fertrans-mono-1.png") { tmpl_8views(9) }
+spriteset (set_bbway_purchase,            "gfx/fertrans-mono-1.png") { tmpl_purchase(10) }
+
+switch(FEAT_TRAINS, SELF, sw_bbway_graphics_wagon, cargo_type_in_veh) {
+    PASS:      set_bbway_wagon_pax;
+    TOUR:      set_bbway_wagon_pax;
+    set_bbway_wagon_cargo;
+}
+
+switch(FEAT_TRAINS, SELF, sw_bbway_graphics_rear, position_in_vehid_chain_from_end % 5) {
+    0:      set_bbway_rear;
+    sw_bbway_graphics_wagon;
+}
+
+switch(FEAT_TRAINS, SELF, sw_bbway_graphics, position_in_vehid_chain % 5) {
+    0:      set_bbway_front;
+    sw_bbway_graphics_rear;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_bbway_articulated_part, extra_callback_info1) {
+    1 .. 4: return item_bbway;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_bbway) {
+    property {
+        name:                         string(STR_BBWAY_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(1965, 1, 1);
+        model_life:                   30;
+        vehicle_life:                 20;
+        reliability_decay:            15;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS,CC_MAIL,CC_EXPRESS,CC_ARMOURED);
+        non_refittable_cargo_classes: bitmask(CC_LIQUID);
+        loading_speed:                15; 
+        cost_factor:                  8;
+        running_cost_factor:          125;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        75 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1; 
+        track_type:                   MONO;
+        power:                        150 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               80;
+        weight:                       13 ton;
+        engine_class:                 ENGINE_CLASS_MONORAIL;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.3;
+        air_drag_coefficient:         0.04;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       6;
+    }
+    
+    graphics {
+        default:                      sw_bbway_graphics;
+        purchase:                     set_bbway_purchase;
+        articulated_part:             sw_bbway_articulated_part;
+    }
+}
+
+/*               ====================
+ *               =====   YSUB   =====
+ *               ====================
+ */
+ 
+spriteset (set_ysub_front,               "gfx/fertrans-mono-1.png") { tmpl_8views(15) }
+spriteset (set_ysub_rear,                "gfx/fertrans-mono-1.png") { tmpl_8views(16) }
+spriteset (set_ysub_wagon,               "gfx/fertrans-mono-1.png") { tmpl_8views(17) }
+spriteset (set_ysub_purchase,            "gfx/fertrans-mono-1.png") { tmpl_purchase(18) }
+
+switch(FEAT_TRAINS, SELF, sw_ysub_graphics_rear, position_in_vehid_chain_from_end % 5) {
+    0:      set_ysub_rear;
+    set_ysub_wagon;
+}
+
+switch(FEAT_TRAINS, SELF, sw_ysub_graphics, position_in_vehid_chain % 5) {
+    0:      set_ysub_front;
+    sw_ysub_graphics_rear;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_ysub_articulated_part, extra_callback_info1) {
+    1 .. 4: return item_ysub;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_ysub) {
+    property {
+        name:                         string(STR_YSUB_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(1970, 1, 1);
+        model_life:                   21;
+        vehicle_life:                 8;
+        reliability_decay:            20;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS);
+        non_refittable_cargo_classes: bitmask();
+        loading_speed:                10; 
+        cost_factor:                  15;
+        running_cost_factor:          220;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        195 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1; 
+        track_type:                   MONO;
+        power:                        250 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               30;
+        weight:                       9 ton;
+        engine_class:                 ENGINE_CLASS_MONORAIL;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.3;
+        air_drag_coefficient:         0.04;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       6;
+    }
+    
+    graphics {
+        default:                      sw_ysub_graphics;
+        purchase:                     set_ysub_purchase;
+        articulated_part:             sw_ysub_articulated_part;
+    }
+}
+
+/*               =====================
+ *               =====   DOZEN   =====
+ *               =====================
+ */
+ 
+spriteset (set_dozen_front,               "gfx/fertrans-mono-2.png") { tmpl_8views(4) }
+spriteset (set_dozen_rear,                "gfx/fertrans-mono-2.png") { tmpl_8views(5) }
+spriteset (set_dozen_wagon,               "gfx/fertrans-mono-2.png") { tmpl_8views(2) }
+spriteset (set_dozen_purchase,            "gfx/fertrans-mono-2.png") { tmpl_purchase(6) }
+
+switch(FEAT_TRAINS, SELF, sw_dozen_graphics_rear, position_in_vehid_chain_from_end % 6) {
+    0:      set_dozen_rear;
+    set_dozen_wagon;
+}
+
+switch(FEAT_TRAINS, SELF, sw_dozen_graphics, position_in_vehid_chain % 6) {
+    0:      set_dozen_front;
+    sw_dozen_graphics_rear;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_dozen_articulated_part, extra_callback_info1) {
+    1 .. 5: return item_dozen;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_dozen) {
+    property {
+        name:                         string(STR_DOZEN_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(1983, 1, 1);
+        model_life:                   35;
+        vehicle_life:                 12;
+        reliability_decay:            15;
+        refittable_cargo_classes:     ALL_NORMAL_CARGO_CLASSES;
+        non_refittable_cargo_classes: bitmask(CC_PASSENGERS);
+        default_cargo_type:           GOOD;
+        loading_speed:                10; 
+        cost_factor:                  12;
+        running_cost_factor:          180;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        80 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1.2; 
+        track_type:                   MONO;
+        power:                        300 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               20;
+        weight:                       13 ton;
+        engine_class:                 ENGINE_CLASS_MONORAIL;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.3;
+        air_drag_coefficient:         0.04;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       8;
+    }
+    
+    graphics {
+        default:                      sw_dozen_graphics;
+        purchase:                     set_dozen_purchase;
+        articulated_part:             sw_dozen_articulated_part;
+    }
+}
+
+/*               ======================
+ *               =====   SAFARI   =====
+ *               ======================
+ */
+ 
+spriteset (set_safari_front,               "gfx/fertrans-mono-2.png") { tmpl_8views(7) }
+spriteset (set_safari_rear,                "gfx/fertrans-mono-2.png") { tmpl_8views(8) }
+spriteset (set_safari_wagon,               "gfx/fertrans-mono-2.png") { tmpl_8views(9) }
+spriteset (set_safari_purchase,            "gfx/fertrans-mono-2.png") { tmpl_purchase(10) }
+
+switch(FEAT_TRAINS, SELF, sw_safari_graphics_rear, position_in_vehid_chain_from_end % 4) {
+    0:      set_safari_rear;
+    set_safari_wagon;
+}
+
+switch(FEAT_TRAINS, SELF, sw_safari_graphics, position_in_vehid_chain % 4) {
+    0:      set_safari_front;
+    sw_safari_graphics_rear;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_safari_articulated_part, extra_callback_info1) {
+    1 .. 3: return item_safari;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_safari) {
+    property {
+        name:                         string(STR_SAFARI_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(1989, 1, 1);
+        model_life:                   23;
+        vehicle_life:                 18;
+        reliability_decay:            10;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS);
+        non_refittable_cargo_classes: bitmask();
+        loading_speed:                10; 
+        cost_factor:                  20;
+        running_cost_factor:          250;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        220 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1.2; 
+        track_type:                   MONO;
+        power:                        250 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               40;
+        weight:                       11 ton;
+        engine_class:                 ENGINE_CLASS_MONORAIL;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.3;
+        air_drag_coefficient:         0.04;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       7;
+    }
+    
+    graphics {
+        default:                      sw_safari_graphics;
+        purchase:                     set_safari_purchase;
+        articulated_part:             sw_safari_articulated_part;
+    }
+}
+
+/*               =====================
+ *               =====   YOUTH   =====
+ *               =====================
+ */
+ 
+spriteset (set_youth_front,               "gfx/fertrans-mono-2.png") { tmpl_8views(11) }
+spriteset (set_youth_rear,                "gfx/fertrans-mono-2.png") { tmpl_8views(12) }
+spriteset (set_youth_wagon,               "gfx/fertrans-mono-2.png") { tmpl_8views(13) }
+spriteset (set_youth_purchase,            "gfx/fertrans-mono-2.png") { tmpl_purchase(14) }
+
+switch(FEAT_TRAINS, SELF, sw_youth_graphics, position_in_vehid_chain % 4) {
+    0:      set_youth_front;
+    3:      set_youth_rear;
+    set_youth_wagon;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_youth_articulated_part, extra_callback_info1) {
+    1 .. 3: return item_youth;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_youth) {
+    property {
+        name:                         string(STR_YOUTH_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(1993, 1, 1);
+        model_life:                   27;
+        vehicle_life:                 30;
+        reliability_decay:            8;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS,CC_MAIL,CC_EXPRESS,CC_ARMOURED);
+        non_refittable_cargo_classes: bitmask(CC_LIQUID);
+        loading_speed:                20; 
+        cost_factor:                  12;
+        running_cost_factor:          190;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        95 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1.2; 
+        track_type:                   MONO;
+        power:                        180 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               120;
+        weight:                       11 ton;
+        engine_class:                 ENGINE_CLASS_MONORAIL;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.3;
+        air_drag_coefficient:         0.04;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       8;
+    }
+    
+    graphics {
+        default:                      sw_youth_graphics;
+        purchase:                     set_youth_purchase;
+        articulated_part:             sw_youth_articulated_part;
+    }
+}
+
+                /*********************************
+                 *********************************
+                 *****                       *****
+                 *****    ALWEG MONORAILS    *****
+                 *****                       *****
+                 *********************************
+                 *********************************/
+
+/*               =============================
+ *               =====   ALWEG EXPRESS   =====
+ *               =============================
+ */
+ 
+spriteset (set_alweg_express_front,           "gfx/alweg-mono-1.png") { tmpl_8views(2) }
+spriteset (set_alweg_express_rear,            "gfx/alweg-mono-1.png") { tmpl_8views(3) }
+spriteset (set_alweg_express_wagon,           "gfx/alweg-mono-1.png") { tmpl_8views(4) }
+spriteset (set_alweg_express_purchase,        "gfx/alweg-mono-1.png") { tmpl_purchase(5) }
+
+switch(FEAT_TRAINS, SELF, sw_alweg_express_graphics, position_in_vehid_chain % 3) {
+    0:      set_alweg_express_front;
+    2:      set_alweg_express_rear;
+    set_alweg_express_wagon;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_alweg_express_articulated_part, extra_callback_info1) {
+    1 .. 2: return item_alweg_express;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_alweg_express) {
+    property {
+        name:                         string(STR_ALWEG_EXPRESS_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(1952, 1, 1);
+        model_life:                   30;
+        vehicle_life:                 6;
+        reliability_decay:            28;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS,CC_MAIL);
+        non_refittable_cargo_classes: bitmask();
+        loading_speed:                8; 
+        cost_factor:                  12;
+        running_cost_factor:          180;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        160 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1.2; 
+        track_type:                   MONO;
+        power:                        150 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               25;
+        weight:                       9 ton;
+        engine_class:                 ENGINE_CLASS_MONORAIL;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.3;
+        air_drag_coefficient:         0.04;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       6;
+    }
+    
+    graphics {
+        default:                      sw_alweg_express_graphics;
+        purchase:                     set_alweg_express_purchase;
+        articulated_part:             sw_alweg_express_articulated_part;
+    }
+}
+
+/*               ================================
+ *               =====   ALWEG TEST MODEL   =====
+ *               ================================
+ */
+ 
+spriteset (set_alweg_test_front,           "gfx/alweg-mono-1.png") { tmpl_8views(6) }
+spriteset (set_alweg_test_rear,            "gfx/alweg-mono-1.png") { tmpl_8views(7) }
+spriteset (set_alweg_test_wagon,           "gfx/alweg-mono-1.png") { tmpl_8views(0) }
+spriteset (set_alweg_test_purchase,        "gfx/alweg-mono-1.png") { tmpl_purchase(8) }
+
+switch(FEAT_TRAINS, SELF, sw_alweg_test_graphics, position_in_vehid_chain % 2) {
+    0:      set_alweg_test_front;
+    1:      set_alweg_test_rear;
+    set_alweg_test_wagon;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_alweg_test_articulated_part, extra_callback_info1) {
+    1: return item_alweg_test;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_alweg_test) {
+    property {
+        name:                         string(STR_ALWEG_TEST_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(1956, 7, 1);
+        model_life:                   5;
+        vehicle_life:                 10;
+        reliability_decay:            30;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS,CC_MAIL,CC_EXPRESS,CC_ARMOURED);
+        non_refittable_cargo_classes: bitmask(CC_LIQUID);
+        loading_speed:                20; 
+        cost_factor:                  6;
+        running_cost_factor:          25;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        55 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1; 
+        track_type:                   MONO;
+        power:                        100 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               90;
+        weight:                       10 ton;
+        engine_class:                 ENGINE_CLASS_MONORAIL;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.3;
+        air_drag_coefficient:         0.04;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       6;
+    }
+    
+    graphics {
+        default:                      sw_alweg_test_graphics;
+        purchase:                     set_alweg_test_purchase;
+        articulated_part:             sw_alweg_test_articulated_part;
+    }
+}
+
+/*               ======================================
+ *               =====   DISNEYLAND-ALWEG Mk IV   =====
+ *               ======================================
+ */
+ 
+spriteset (set_disney_4_front,           "gfx/alweg-mono-1.png") { tmpl_8views(9) }
+spriteset (set_disney_4_rear,            "gfx/alweg-mono-1.png") { tmpl_8views(10) }
+spriteset (set_disney_4_wagon,           "gfx/alweg-mono-1.png") { tmpl_8views(11) }
+spriteset (set_disney_4_purchase,        "gfx/alweg-mono-1.png") { tmpl_purchase(12) }
+
+switch(FEAT_TRAINS, SELF, sw_disney_4_graphics, position_in_vehid_chain % 5) {
+    0:      set_disney_4_front;
+    4:      set_disney_4_rear;
+    set_disney_4_wagon;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_disney_4_articulated_part, extra_callback_info1) {
+    1 .. 4: return item_disney_4;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch(FEAT_TRAINS, SELF, sw_disney_4_length, position_in_vehid_chain % 5) {
+    0:      return 7;
+    4:      return 7;
+    return 6;
+}
+
+item(FEAT_TRAINS, item_disney_4) {
+    property {
+        name:                         string(STR_DISNEY_4_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(1971, 1, 1);
+        model_life:                   20;
+        vehicle_life:                 10;
+        reliability_decay:            22;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS);
+        non_refittable_cargo_classes: bitmask();
+        loading_speed:                20; 
+        cost_factor:                  10;
+        running_cost_factor:          140;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        85 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1; 
+        track_type:                   MONO;
+        power:                        150 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               90;
+        weight:                       15 ton;
+        engine_class:                 ENGINE_CLASS_MONORAIL;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.3;
+        air_drag_coefficient:         0.04;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+    }
+    
+    graphics {
+        default:                      sw_disney_4_graphics;
+        purchase:                     set_disney_4_purchase;
+        articulated_part:             sw_disney_4_articulated_part;
+        length:                       sw_disney_4_length;
+    }
+}
+
+                /************************************
+                 ************************************
+                 *****                          *****
+                 *****    JAPANESE MONORAILS    *****
+                 *****                          *****
+                 ************************************
+                 ************************************/
+
+/*               ======================================
+ *               =====   TAMA TOSHI 1000 SERIES   =====
+ *               ======================================
+ */
+ 
+spriteset (set_tama_toshi_1k_front,           "gfx/japan-mono-1.png") { tmpl_8views(2) }
+spriteset (set_tama_toshi_1k_rear,            "gfx/japan-mono-1.png") { tmpl_8views(3) }
+spriteset (set_tama_toshi_1k_wagon,           "gfx/japan-mono-1.png") { tmpl_8views(0) }
+spriteset (set_tama_toshi_1k_purchase,        "gfx/japan-mono-1.png") { tmpl_purchase(4) }
+
+switch(FEAT_TRAINS, SELF, sw_tama_toshi_1k_graphics, position_in_vehid_chain % 4) {
+    0:      set_tama_toshi_1k_front;
+    3:      set_tama_toshi_1k_rear;
+    set_tama_toshi_1k_wagon;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_tama_toshi_1k_articulated_part, extra_callback_info1) {
+    1 .. 3: return item_tama_toshi_1k;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_tama_toshi_1k) {
+    property {
+        name:                         string(STR_TAMA_TOSHI_1K_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(1998, 1, 1);
+        model_life:                   40;
+        vehicle_life:                 25;
+        reliability_decay:            18;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS,CC_MAIL,CC_EXPRESS,CC_ARMOURED);
+        non_refittable_cargo_classes: bitmask(CC_LIQUID);
+        loading_speed:                20; 
+        cost_factor:                  14;
+        running_cost_factor:          210;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        85 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1; 
+        track_type:                   MONO;
+        power:                        160 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               140;
+        weight:                       18 ton;
+        engine_class:                 ENGINE_CLASS_MONORAIL;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.3;
+        air_drag_coefficient:         0.04;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+    }
+    
+    graphics {
+        default:                      sw_tama_toshi_1k_graphics;
+        purchase:                     set_tama_toshi_1k_purchase;
+        articulated_part:             sw_tama_toshi_1k_articulated_part;
+    }
+}
+
+                /*************************
+                 *************************
+                 *****               *****
+                 *****    MAGLEVS    *****
+                 *****               *****
+                 *************************
+                 *************************/
+
+/*               ====================
+ *               =====   FROG   =====
+ *               ====================
+ */
+ 
+spriteset (set_f2202_front,       "gfx/fertrans-maglev-1.png") { tmpl_8views(5) }
+spriteset (set_f2202_rear,        "gfx/fertrans-maglev-1.png") { tmpl_8views(6) }
+spriteset (set_f2202_wagon_cargo, "gfx/fertrans-maglev-1.png") { tmpl_8views(7) }
+spriteset (set_f2202_purchase,    "gfx/fertrans-maglev-1.png") { tmpl_purchase(8) }
+
+switch(FEAT_TRAINS, SELF, sw_f2202_graphics_rear, position_in_vehid_chain_from_end % 6) {
+    0:      set_f2202_rear;
+    set_f2202_wagon_cargo;
+}
+
+switch(FEAT_TRAINS, SELF, sw_f2202_graphics, position_in_vehid_chain % 6) {
+    0:      set_f2202_front;
+    sw_f2202_graphics_rear;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_f2202_articulated_part, extra_callback_info1) {
+    1 .. 5: return item_f2202;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_f2202) {
+    property {
+        name:                         string(STR_F2202_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(2013, 2, 22);
+        model_life:                   60;
+        vehicle_life:                 30;
+        reliability_decay:            25;
+        refittable_cargo_classes:     bitmask(CC_MAIL,CC_EXPRESS,CC_ARMOURED);
+        cargo_disallow_refit:         [TOUR];
+        loading_speed:                15;
+        cost_factor:                  20;
+        running_cost_factor:          180;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        500 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1; 
+        track_type:                   MGLV;
+        power:                        2800 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               20;
+        weight:                       30 ton;
+        engine_class:                 ENGINE_CLASS_MAGLEV;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.7;
+        air_drag_coefficient:         0.02;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       8;
+    }
+    
+    graphics {
+        default:                      sw_f2202_graphics;
+        purchase:                     set_f2202_purchase;
+        articulated_part:             sw_f2202_articulated_part;
+    }
+}
+
+/*               ====================
+ *               =====   LEAF   =====
+ *               ====================
+ */
+ 
+spriteset (set_leaf_front,       "gfx/fertrans-maglev-1.png") { tmpl_8views(9) }
+spriteset (set_leaf_rear,        "gfx/fertrans-maglev-1.png") { tmpl_8views(10) }
+spriteset (set_leaf_wagon_pax,   "gfx/fertrans-maglev-1.png") { tmpl_8views(11) }
+spriteset (set_leaf_purchase,    "gfx/fertrans-maglev-1.png") { tmpl_purchase(12) }
+
+switch(FEAT_TRAINS, SELF, sw_leaf_graphics_rear, position_in_vehid_chain_from_end % 4) {
+    0:      set_leaf_rear;
+    set_leaf_wagon_pax;
+}
+
+switch(FEAT_TRAINS, SELF, sw_leaf_graphics, position_in_vehid_chain % 4) {
+    0:      set_leaf_front;
+    sw_leaf_graphics_rear;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_leaf_articulated_part, extra_callback_info1) {
+    1 .. 3: return item_leaf;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_leaf) {
+    property {
+        name:                         string(STR_LEAF_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(2008, 9, 25);
+        model_life:                   60;
+        vehicle_life:                 30;
+        reliability_decay:            30;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS,CC_MAIL);
+        non_refittable_cargo_classes: bitmask();
+        loading_speed:                20; 
+        cost_factor:                  20;
+        running_cost_factor:          160;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        380 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1; 
+        track_type:                   MGLV;
+        power:                        2500 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               45;
+        weight:                       26 ton;
+        engine_class:                 ENGINE_CLASS_MAGLEV;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.7;
+        air_drag_coefficient:         0.03;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       8;
+    }
+    
+    graphics {
+        default:                      sw_leaf_graphics;
+        purchase:                     set_leaf_purchase;
+        articulated_part:             sw_leaf_articulated_part;
+    }
+}
+
+/*               =====================
+ *               =====   ARROW   =====
+ *               =====================
+ */
+ 
+spriteset (set_arrow_front,       "gfx/fertrans-maglev-1.png") { tmpl_8views(0) }
+spriteset (set_arrow_rear,        "gfx/fertrans-maglev-1.png") { tmpl_8views(1) }
+spriteset (set_arrow_wagon_pax,   "gfx/fertrans-maglev-1.png") { tmpl_8views(2) }
+spriteset (set_arrow_wagon_cargo, "gfx/fertrans-maglev-1.png") { tmpl_8views(3) }
+spriteset (set_arrow_purchase,    "gfx/fertrans-maglev-1.png") { tmpl_purchase(4) }
+
+switch(FEAT_TRAINS, SELF, sw_arrow_graphics_wagon, cargo_type_in_veh) {
+    PASS:      set_arrow_wagon_pax;
+    TOUR:      set_arrow_wagon_pax;
+    set_arrow_wagon_cargo;
+}
+
+switch(FEAT_TRAINS, SELF, sw_arrow_graphics_rear, position_in_vehid_chain_from_end % 6) {
+    0:      set_arrow_rear;
+    sw_arrow_graphics_wagon;
+}
+
+switch(FEAT_TRAINS, SELF, sw_arrow_graphics, position_in_vehid_chain % 6) {
+    0:      set_arrow_front;
+    sw_arrow_graphics_rear;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_arrow_articulated_part, extra_callback_info1) {
+    1 .. 5: return item_arrow;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_arrow) {
+    property {
+        name:                         string(STR_ARROW_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(2026, 1, 1);
+        model_life:                   40;
+        vehicle_life:                 25;
+        reliability_decay:            25;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS,CC_MAIL,CC_EXPRESS,CC_ARMOURED);
+        non_refittable_cargo_classes: bitmask(CC_LIQUID);
+        loading_speed:                15; 
+        cost_factor:                  25;
+        running_cost_factor:          220;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        1100 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1; 
+        track_type:                   MGLV;
+        power:                        4000 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               30;
+        weight:                       30 ton;
+        engine_class:                 ENGINE_CLASS_MAGLEV;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.9;
+        air_drag_coefficient:         0.01;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       8;
+    }
+    
+    graphics {
+        default:                      sw_arrow_graphics;
+        purchase:                     set_arrow_purchase;
+        articulated_part:             sw_arrow_articulated_part;
+    }
+}
+
+/*               =============================
+ *               =====   HYUNDI UTM-02   =====
+ *               =============================
+ */
+ 
+spriteset (set_utm02_front,       "gfx/other-maglev-1.png") { tmpl_8views(0) }
+spriteset (set_utm02_rear,        "gfx/other-maglev-1.png") { tmpl_8views(1) }
+spriteset (set_utm02_purchase,    "gfx/other-maglev-1.png") { tmpl_purchase(2) }
+
+switch(FEAT_TRAINS, SELF, sw_utm02_graphics, position_in_vehid_chain % 2) {
+    0:      set_utm02_front;
+    set_utm02_rear;
+}
+
+/* --- Articulated part callback  --- */
+switch(FEAT_TRAINS, SELF, sw_utm02_articulated_part, extra_callback_info1) {
+    1: return item_utm02;
+    return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item(FEAT_TRAINS, item_utm02) {
+    property {
+        name:                         string(STR_UTM02_NAME);
+        climates_available:           ALL_CLIMATES; 
+        introduction_date:            date(2003, 1, 1);
+        model_life:                   40;
+        vehicle_life:                 20;
+        reliability_decay:            23;
+        refittable_cargo_classes:     bitmask(CC_PASSENGERS);
+        non_refittable_cargo_classes: bitmask();
+        loading_speed:                20; 
+        cost_factor:                  16;
+        running_cost_factor:          100;
+        sprite_id:                    SPRITE_ID_NEW_TRAIN;
+        speed:                        300 km/h;
+        misc_flags:                   bitmask(TRAIN_FLAG_2CC);
+        refit_cost:                   1; 
+        track_type:                   MGLV;
+        power:                        600 hp;
+        running_cost_base:            RUNNING_COST_ELECTRIC;
+        dual_headed:                  0;
+        cargo_capacity:               60;
+        weight:                       12 ton;
+        engine_class:                 ENGINE_CLASS_MAGLEV;
+        extra_power_per_wagon:        0 kW;
+        tractive_effort_coefficient:  0.5;
+        air_drag_coefficient:         0.03;
+        visual_effect_and_powered:    visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, ENABLE_WAGON_POWER);
+        extra_weight_per_wagon:       0 ton;
+        bitmask_vehicle_info:         0;
+        length:                       8;
+    }
+    
+    graphics {
+        default:                      sw_utm02_graphics;
+        purchase:                     set_utm02_purchase;
+        articulated_part:             sw_utm02_articulated_part;
+    }
+}

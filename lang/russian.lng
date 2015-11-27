@@ -1,0 +1,34 @@
+##grflangid 0x07
+STR_GRF_NAME :M&Ms - Монорельс и маглев (r4)
+STR_GRF_DESCRIPTION :M&Ms добавляет в игру несколько удобных монорельсовых и магнитных поездов, в основном, рассчитанных на городские и короткие пригородные пассажирские линии. Набор хорошо подходит для использования с другими наборами поездов, в которых монорельсовые поезда отсутствуют или присутствуют в очень малом количестве. 
+
+STR_ATTACH_ONLY_SAME          :... можно прицеплять только поезда той же модели.
+STR_CANT_ATTACH_WAGON         :... к этой модели ничего нельзя прицепить.
+
+STR_CANNOT_START_MAX_2        :... поезд слишком длинный (сцеплять не более 2х).
+STR_CANNOT_START_MAX_3        :... поезд слишком длинный (сцеплять не более 3х).
+STR_CANNOT_START_MAX_4        :... поезд слишком длинный (сцеплять не более 4х).
+STR_CANNOT_START_MAX_5        :... поезд слишком длинный (сцеплять не более 5ти).
+STR_CANNOT_START_MAX_6        :... поезд слишком длинный (сцеплять не более 6ти).
+
+# engine names
+
+STR_CANDY_NAME                :FerTrans B-100 'Candy'
+STR_MASTIFF_NAME              :FerTrans B-360 'Мастиф'
+STR_BBWAY_NAME                :FerTrans B-585 'BB-way'
+STR_YSUB_NAME                 :FerTrans F-300 'Жёлтая Субмарина'
+STR_DOZEN_NAME                :FerTrans H1212 'Дюжина'
+STR_SAFARI_NAME               :FerTrans M1400 'Сафари'
+STR_YOUTH_NAME                :FerTrans S2280 'Молодёжь'
+
+STR_ALWEG_EXPRESS_NAME        :Alweg-Экспресс
+STR_ALWEG_TEST_NAME           :Alweg (тестовая модель)
+STR_DISNEY_4_NAME             :Disneyland-Alweg M-IV
+
+STR_TAMA_TOSHI_1K_NAME        :Tama Toshi 1000 series
+
+STR_ARROW_NAME                :FerTrans AR1000 'Стрела'
+STR_F2202_NAME                :FerTrans F2202 'Лягушка'
+STR_LEAF_NAME                 :FerTrans F2509 'Лист'
+
+STR_UTM02_NAME                :Hyundi UTM-02

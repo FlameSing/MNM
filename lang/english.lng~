@@ -1,0 +1,33 @@
+##grflangid 0x00
+STR_GRF_NAME :M&Ms - Monorail & maglev train set (r4)
+STR_GRF_DESCRIPTION :M&Ms brings some useful monorails and maglevs, primarly for city and short-distance passenger lines. This set is designed to use with other trainsets with lack of mororail and maglev trains. 
+
+STR_ATTACH_ONLY_SAME          :... only same model trains can be attached.
+STR_CANT_ATTACH_WAGON         :... nothing can be attached.
+
+STR_CANNOT_START_MAX_2        :... train too long (max. 2 coupled trains).
+STR_CANNOT_START_MAX_3        :... train too long (max. 3 coupled trains).
+STR_CANNOT_START_MAX_4        :... train too long (max. 4 coupled trains).
+STR_CANNOT_START_MAX_5        :... train too long (max. 5 coupled trains).
+STR_CANNOT_START_MAX_6        :... train too long (max. 6 coupled trains).
+
+# engine names
+
+STR_CANDY_NAME                :FerTrans B-100 'Candy'
+STR_MASTIFF_NAME              :FerTrans B-360 'Mastiff'
+STR_BBWAY_NAME                :FerTrans B-585 'BB-way'
+STR_YSUB_NAME                 :FerTrans F-300 'Yellow Submarine'
+STR_DOZEN_NAME                :FerTrans H1212 'Dozen'
+STR_SAFARI_NAME               :FerTrans M1400 'Safari'
+STR_YOUTH_NAME                :FerTrans S2280 'Youth'
+
+STR_ALWEG_EXPRESS_NAME        :Alweg Express
+STR_ALWEG_TEST_NAME           :Alweg Test model
+STR_DISNEY_4_NAME             :Disneyland-Alweg M-IV
+
+STR_TAMA_TOSHI_1K_NAME        :Tama Toshi 1000 series
+
+STR_ARROW_NAME                :FerTrans AR1000 'The Arrow'
+STR_F2202_NAME                :FerTrans F2202 'Frog'
+
+STR_UTM02_NAME                :Hyundi UTM-02
